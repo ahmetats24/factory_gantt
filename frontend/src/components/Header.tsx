@@ -3,6 +3,8 @@ import { useAppContext } from '../App'
 
 export function Header() {
   const { loading, refresh, highlightWoId, setHighlightWoId } = useAppContext()
+  
+  console.log('Header render - loading:', loading, 'highlightWoId:', highlightWoId)
 
   return (
     <header className="header">

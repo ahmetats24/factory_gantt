@@ -595,6 +595,8 @@ body {
 
 .bar-conflict-icon {
   font-size: 0.75rem;
+  color: var(--error-400);
+  animation: pulse 2s infinite;
 }
 
 .bar-body {
@@ -1239,4 +1241,37 @@ body {
   .edit-actions {
     flex-direction: column;
   }
+}
+
+/* Conflict Banner */
+.conflict-banner {
+  background: linear-gradient(135deg, var(--warning-600), var(--warning-700));
+  color: white;
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-weight: 500;
+  border-left: 4px solid var(--warning-400);
+}
+
+.conflict-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.auto-resolve-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.auto-resolve-toggle input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--warning-400);
 } 

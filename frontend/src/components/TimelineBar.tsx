@@ -78,12 +78,16 @@ export function TimelineBar({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      title={`${op.workOrderId} · ${op.name}\n${getStartTime()} - ${getEndTime()} (${getDuration()})`}
+      title={`${op.workOrderId} · ${op.name}\n${getStartTime()} - ${getEndTime()} (${getDuration()})${hasConflict ? '\n⚠️ CONFLICT DETECTED' : ''}`}
     >
       <div className="bar-content">
         <div className="bar-header">
           <span className="bar-id">{op.workOrderId}</span>
-          {hasConflict && <span className="bar-conflict-icon">⚠️</span>}
+          {hasConflict && (
+            <span className="bar-conflict-icon" title="Scheduling conflict detected">
+              ⚠️
+            </span>
+          )}
         </div>
         
         <div className="bar-body">
@@ -97,12 +101,15 @@ export function TimelineBar({
         </div>
       </div>
 
-      {/* Tooltip for more details */}
+      {/* Enhanced tooltip for conflicts */}
       {isHovered && (
         <div className="bar-tooltip">
           <div className="tooltip-header">
             <strong>{op.workOrderId}</strong>
             <span className="tooltip-operation">{op.name}</span>
+            {hasConflict && (
+              <span className="tooltip-conflict-warning">⚠️ CONFLICT</span>
+            )}
           </div>
           <div className="tooltip-details">
             <div className="tooltip-row">
@@ -122,8 +129,13 @@ export function TimelineBar({
               <span>{getDuration()}</span>
             </div>
             {hasConflict && (
-              <div className="tooltip-warning">
-                ⚠️ This operation has scheduling conflicts
+              <div className="tooltip-conflict-details">
+                <div className="tooltip-warning">
+                  ⚠️ This operation has scheduling conflicts
+                </div>
+                <div className="tooltip-suggestion">
+                  Consider rescheduling or using the "Resolve Conflicts" button
+                </div>
               </div>
             )}
           </div>

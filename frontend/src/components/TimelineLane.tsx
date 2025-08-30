@@ -22,17 +22,19 @@ export function TimelineLane({
   isDragging,
   dragData
 }: Props) {
+  console.log('TimelineLane render - machineId:', machineId, 'operations:', operations.length, 'highlightWoId:', highlightWoId)
+  
   const sortedOps = useMemo(() => 
-    [...operations].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()), 
+    [...operations].sort((a, b) => new Date(a.start).getTime() - new Date(a.start).getTime()), 
     [operations]
   )
   
   const { rows, rowById } = useMemo(() => layoutRows(sortedOps), [sortedOps])
   const trackHeight = TRACK_PAD_TOP + TRACK_PAD_BOTTOM + rows * BAR_HEIGHT + (rows - 1) * ROW_GAP
 
-  // Check for conflicts in this lane
+  // Enhanced conflict detection
   const conflicts = useMemo(() => {
-    const conflicts: string[] = []
+    const conflicts: Array<{op1: Operation, op2: Operation}> = []
     for (let i = 0; i < sortedOps.length; i++) {
       for (let j = i + 1; j < sortedOps.length; j++) {
         const op1 = sortedOps[i]
@@ -43,12 +45,22 @@ export function TimelineLane({
         const end2 = new Date(op2.end).getTime()
         
         if (start1 < end2 && start2 < end1) {
-          conflicts.push(op1.id, op2.id)
+          conflicts.push({op1, op2})
         }
       }
     }
     return conflicts
   }, [sortedOps])
+
+  // Get conflict IDs for highlighting
+  const conflictIds = useMemo(() => {
+    const ids = new Set<string>()
+    conflicts.forEach(conflict => {
+      ids.add(conflict.op1.id)
+      ids.add(conflict.op2.id)
+    })
+    return ids
+  }, [conflicts])
 
   return (
     <div className="timeline-lane">
@@ -59,8 +71,8 @@ export function TimelineLane({
           <span className="lane-count">({operations.length})</span>
         </div>
         {conflicts.length > 0 && (
-          <div className="lane-warning" title="Conflicts detected">
-            ⚠️ {conflicts.length / 2} conflicts
+          <div className="lane-warning" title={`${conflicts.length} conflicts detected`}>
+            ⚠️ {conflicts.length} conflicts
           </div>
         )}
       </div>
@@ -73,7 +85,7 @@ export function TimelineLane({
           const highlighted = highlightWoId === op.workOrderId
           const row = rowById.get(op.id) ?? 0
           const top = TRACK_PAD_TOP + row * (BAR_HEIGHT + ROW_GAP)
-          const hasConflict = conflicts.includes(op.id)
+          const hasConflict = conflictIds.has(op.id)
           const isBeingDragged = isDragging && dragData?.operation.id === op.id
           
           return (

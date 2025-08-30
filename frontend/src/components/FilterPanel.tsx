@@ -5,6 +5,8 @@ export function FilterPanel() {
   const { workOrders, filters, setFilters } = useAppContext()
   const [isExpanded, setIsExpanded] = useState(false)
 
+  console.log('FilterPanel render - workOrders:', workOrders.length, 'filters:', filters)
+
   // Get unique machines and work orders for filters
   const { machines, workOrderIds } = useMemo(() => {
     const machineSet = new Set<string>()
